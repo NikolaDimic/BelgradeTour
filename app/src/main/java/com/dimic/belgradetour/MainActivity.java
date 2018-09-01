@@ -3,42 +3,56 @@ package com.dimic.belgradetour;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
+import com.dimic.belgradetour.fragments.MapFragment;
+import com.dimic.belgradetour.fragments.SightListFragment;
+import com.dimic.belgradetour.fragments.TourFragment;
 
-    private TextView mTextMessage;
+public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+            Fragment fragment = null;
             switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    mTextMessage.setText(R.string.title_home);
-                    return true;
-                case R.id.navigation_dashboard:
-                    mTextMessage.setText(R.string.title_dashboard);
-                    return true;
-                case R.id.navigation_notifications:
-                    mTextMessage.setText(R.string.title_notifications);
-                    return true;
+                case R.id.map:
+                    fragment = MapFragment.newInstance();
+                    break;
+                case R.id.tour:
+                    fragment = TourFragment.newInstance();
+                    break;
+                case R.id.sight_list:
+                    fragment = SightListFragment.newInstance();
+                    break;
             }
-            return false;
+            switchToFragment(fragment);
+            return true;
         }
     };
+
+    private void switchToFragment(Fragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, fragment)
+                .commit();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mTextMessage = (TextView) findViewById(R.id.message);
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        switchToFragment(MapFragment.newInstance());
     }
 
 }

@@ -1,7 +1,11 @@
 <resources>
     <string name="app_name">BelgradeTour</string>
     <string name="title_activity_main">MainActivity</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="map">Map</string>
+    <string name="my_route">My Route</string>
+    <string name="sight_list">Sight List</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>
