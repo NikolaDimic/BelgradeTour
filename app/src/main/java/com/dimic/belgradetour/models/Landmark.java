@@ -5,14 +5,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Landmark implements Serializable{
+    private String id;
     private String name;
     private String description;
     private String imageUrl;
+    private double latitude, longitude;
 
-    public Landmark(String name, String description, String imageUrl) {
+    public Landmark(String id, String name, String description, String imageUrl, double latitude, double longitude) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.imageUrl = imageUrl;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -41,8 +54,11 @@ public class Landmark implements Serializable{
 
     public static List<Landmark> getAllLandmarks(){
         List<Landmark> list = new ArrayList<>();
-        list.add(new Landmark("Kalemegdan", "Lepo jedno mesto", "https://rs.n1info.com/Picture/113259/jpeg/bg.jpg"));
-        list.add(new Landmark("City hall", "bezveze jedno mesto", "https://thumbs.dreamstime.com/b/belgrade-city-hall-25729652.jpg"));
+        list.add(new Landmark("1","Kalemegdan", "Lepo jedno mesto", "https://rs.n1info.com/Picture/113259/jpeg/bg.jpg", 0, 0));
+        list.add(new Landmark("2", "City hall", "bezveze jedno mesto", "https://thumbs.dreamstime.com/b/belgrade-city-hall-25729652.jpg", 0, 0));
+        list.add(new Landmark("3", " hall", "bezveze jedno mesto", "https://thumbs.dreamstime.com/b/belgrade-city-hall-25729652.jpg",0,0));
+        list.add(new Landmark("4", "City ", "bezveze jedno mesto", "https://thumbs.dreamstime.com/b/belgrade-city-hall-25729652.jpg",0,0));
+        list.add(new Landmark("5", "Noise hall", "bezveze jedno mesto", "https://thumbs.dreamstime.com/b/belgrade-city-hall-25729652.jpg",0,0));
         return list;
     }
 }

@@ -24,10 +24,10 @@
         app:layout_constraintStart_toEndOf="@+id/landmarkImageView"
         app:layout_constraintTop_toTopOf="parent" />
     <ImageButton
-        android:id="@+id/addButton"
+        android:id="@+id/removeButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintRight_toRightOf="parent"
-        android:src="@android:drawable/ic_input_add"/>
+        android:src="@android:drawable/ic_delete"/>
 
 </android.support.constraint.ConstraintLayout>

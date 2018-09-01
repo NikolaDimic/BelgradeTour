@@ -22,6 +22,10 @@
             android:name=".MainActivity"
             android:label="@string/title_activity_main" />
         <activity android:name=".LandmarkDetailsActivity"></activity>
+
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="AIzaSyAHDIEElMiEmetCiaIv3ehXVSK2ZlEqXQA"/>
     </application>
 
 </manifest>

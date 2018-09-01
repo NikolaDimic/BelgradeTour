@@ -16,25 +16,25 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-public class LandmarksAdapter extends RecyclerView.Adapter<LandmarksAdapter.LandmarkViewHolder> {
+public class TourLandmarksAdapter extends RecyclerView.Adapter<TourLandmarksAdapter.LandmarkViewHolder> {
 
     private List<Landmark> landmarks;
     private Context context;
 
-    public LandmarksAdapter(List<Landmark> landmarks, Context context) {
+    public TourLandmarksAdapter(List<Landmark> landmarks, Context context) {
         this.landmarks = landmarks;
         this.context = context;
     }
 
     @NonNull
     @Override
-    public LandmarkViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.landmark_entry, parent, false);
-        return new LandmarkViewHolder(view);
+    public TourLandmarksAdapter.LandmarkViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(context).inflate(R.layout.tour_landmark_entry, parent, false);
+        return new TourLandmarksAdapter.LandmarkViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull LandmarkViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull TourLandmarksAdapter.LandmarkViewHolder holder, int position) {
         holder.bind(landmarks.get(position));
     }
 
@@ -48,22 +48,22 @@ public class LandmarksAdapter extends RecyclerView.Adapter<LandmarksAdapter.Land
         private ImageView landmarkImageView;
         private TextView nameTextView;
         private ConstraintLayout landmarkContainer;
-        private ImageButton addButton;
+        private ImageButton removeButton;
 
         public LandmarkViewHolder(View itemView) {
             super(itemView);
             landmarkImageView = itemView.findViewById(R.id.landmarkImageView);
             nameTextView = itemView.findViewById(R.id.nameTextView);
             landmarkContainer = itemView.findViewById(R.id.landmarkContainer);
-            addButton = itemView.findViewById(R.id.addButton);
+            removeButton = itemView.findViewById(R.id.removeButton);
         }
 
         public void bind(final Landmark landmark) {
             nameTextView.setText(landmark.getName());
-            addButton.setOnClickListener(new View.OnClickListener() {
+            removeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    addLandmarkToRoute(landmark);
+                    removeLandmarkFromTour(landmark);
                 }
             });
             Picasso.get().load(landmark.getImageUrl()).into(landmarkImageView);
@@ -76,8 +76,10 @@ public class LandmarksAdapter extends RecyclerView.Adapter<LandmarksAdapter.Land
         }
     }
 
-    private void addLandmarkToRoute(Landmark landmark) {
+    private void removeLandmarkFromTour(Landmark landmark) {
+        landmarks.remove(landmark);
         RouteManager routeManager = new RouteManager(context);
-        routeManager.addLandmark(landmark.getId());
+        routeManager.removeLandmark(landmark.getId());
+        notifyDataSetChanged();
     }
 }
