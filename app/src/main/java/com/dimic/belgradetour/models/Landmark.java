@@ -11,13 +11,14 @@ public class Landmark implements Serializable{
     private String name;
     private String description;
     private Integer image;
-    public double latitude, longitude;
+    private double latitude, longitude;
 
     public Landmark(String id, String name, String description, Integer image, double latitude, double longitude) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.image = image;
+
         this.latitude = latitude;
         this.longitude = longitude;
     }
@@ -52,6 +53,22 @@ public class Landmark implements Serializable{
 
     public void setImage(Integer image) {
         this.image = image;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 
     public static List<Landmark> getAllLandmarks(){

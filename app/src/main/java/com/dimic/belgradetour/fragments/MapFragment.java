@@ -2,8 +2,10 @@ package com.dimic.belgradetour.fragments;
 
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -11,9 +13,11 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.dimic.belgradetour.R;
+import com.dimic.belgradetour.RouteManager;
 import com.dimic.belgradetour.models.Landmark;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -21,10 +25,13 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -32,10 +39,14 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
 
+    public static final int REQUEST_CODE = 1;
     private MapView mapView;
+    private Button navigateButton;
     private GoogleMap mMap;
-    private FusedLocationProviderClient mFusedLocationClient;
-
+    private FusedLocationProviderClient mFusedLocationProviderClient;
+    private Location myLocation;
+    private RouteManager routeManager;
+    private List<Landmark> routeLandmarks;
 
 
     public MapFragment() {
@@ -51,13 +62,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_map, container, false);
         mapView = view.findViewById(R.id.mapView);
+        navigateButton = view.findViewById(R.id.navigateButton);
+        navigateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openGoogleMaps();
+            }
+        });
         mapView.onCreate(savedInstanceState);
 
         mapView.getMapAsync(this);
@@ -69,7 +86,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         super.onResume();
         mapView.onResume();
     }
-
 
 
     @Override
@@ -84,45 +100,73 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 .build();
         googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
+        routeManager = new RouteManager(getActivity());
+        routeLandmarks = routeManager.getRouteLandmarks();
 
-        LatLng m1 = new LatLng(44.816, 20.4603);
-        MarkerOptions options=new MarkerOptions()
-                .position(m1)
-                .snippet("Lepo jedno mesto")
-                .title("Kalemegdan");
-        mMap.addMarker(options);
+        for (Landmark landmark : routeLandmarks) {
+            LatLng m1 = new LatLng(landmark.getLatitude(), landmark.getLongitude());
+            MarkerOptions options = new MarkerOptions()
+                    .position(m1)
+                    .snippet(landmark.getDescription())
+                    .title(landmark.getName());
+            mMap.addMarker(options);
 
-        LatLng m2 = new LatLng(44.8162589 , 20.4581312);
-        MarkerOptions options2=new MarkerOptions()
-                .position(m2)
-                .snippet("Na Trgu Republike")
-                .title("Monument to Prince Mihailo");
-        mMap.addMarker(options2);
+        }
+        getDeviceLocation();
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-        LatLng m3 = new LatLng(44.812817,20.458324);
-        MarkerOptions options3=new MarkerOptions()
-                .position(m3)
-                .snippet("Fontana kod hotela Moskva")
-                .title("Terazije Fountain");
-        mMap.addMarker(options3);
-
-        LatLng m4 = new LatLng(44.8117406, 20.4637728);
-        MarkerOptions options4=new MarkerOptions()
-                .position(m4)
-                .snippet("Ovde se skuljaju svi politicari")
-                .title("National Assembly");
-        mMap.addMarker(options4);
-
-        LatLng m5 = new LatLng(44.7980694,20.4669297);
-        MarkerOptions options5=new MarkerOptions()
-                .position(m5)
-                .snippet("Najlepsi pravoslavni hram na Balkanu")
-                .title("St. Sava's Cathedral");
-        mMap.addMarker(options5);
-
-
-
-
+            return;
+        }
+        mMap.setMyLocationEnabled(true);
+        mMap.getUiSettings().setMyLocationButtonEnabled(true);
     }
 
+    public void getDeviceLocation() {
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
+
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                    REQUEST_CODE);
+            return;
+        }
+        final Task location = mFusedLocationProviderClient.getLastLocation();
+        location.addOnCompleteListener(new OnCompleteListener() {
+            @Override
+            public void onComplete(@NonNull Task task) {
+                if (task.isSuccessful()) {
+                    myLocation = (Location) task.getResult();
+                }
+            }
+        });
+    }
+
+    private void openGoogleMaps() {
+        String startingAddress = myLocation.getLatitude() + "," + myLocation.getLongitude();
+        String destinationAddress = startingAddress;
+        String additionalStops = "";
+        for (Landmark landmark : routeLandmarks) {
+            additionalStops += "+to:" + landmark.getLatitude() + "," + landmark.getLongitude();
+        }
+        Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+                Uri.parse("http://maps.google.com/maps?saddr=" + startingAddress + "&daddr=" + destinationAddress + additionalStops + "&mode=walking"));
+        intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
+        startActivity(intent);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CODE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getDeviceLocation();
+            } else {
+                Toast.makeText(getActivity(), "Permission denied to get your location", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 }
