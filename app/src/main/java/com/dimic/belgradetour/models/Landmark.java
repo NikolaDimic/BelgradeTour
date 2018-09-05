@@ -1,5 +1,7 @@
 package com.dimic.belgradetour.models;
 
+import com.dimic.belgradetour.R;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,14 +10,14 @@ public class Landmark implements Serializable{
     private String id;
     private String name;
     private String description;
-    private String imageUrl;
-    private double latitude, longitude;
+    private Integer image;
+    public double latitude, longitude;
 
-    public Landmark(String id, String name, String description, String imageUrl, double latitude, double longitude) {
+    public Landmark(String id, String name, String description, Integer image, double latitude, double longitude) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.imageUrl = imageUrl;
+        this.image = image;
         this.latitude = latitude;
         this.longitude = longitude;
     }
@@ -44,21 +46,21 @@ public class Landmark implements Serializable{
         this.description = description;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public Integer getImage() {
+        return image;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setImage(Integer image) {
+        this.image = image;
     }
 
     public static List<Landmark> getAllLandmarks(){
         List<Landmark> list = new ArrayList<>();
-        list.add(new Landmark("1","Kalemegdan", "Lepo jedno mesto", "https://rs.n1info.com/Picture/113259/jpeg/bg.jpg", 0, 0));
-        list.add(new Landmark("2", "City hall", "bezveze jedno mesto", "https://thumbs.dreamstime.com/b/belgrade-city-hall-25729652.jpg", 0, 0));
-        list.add(new Landmark("3", " hall", "bezveze jedno mesto", "https://thumbs.dreamstime.com/b/belgrade-city-hall-25729652.jpg",0,0));
-        list.add(new Landmark("4", "City ", "bezveze jedno mesto", "https://thumbs.dreamstime.com/b/belgrade-city-hall-25729652.jpg",0,0));
-        list.add(new Landmark("5", "Noise hall", "bezveze jedno mesto", "https://thumbs.dreamstime.com/b/belgrade-city-hall-25729652.jpg",0,0));
+        list.add(new Landmark("1","Kalemegdan", "Lepo jedno mesto", R.drawable.kalemegdan , 44.816,20.4462384));
+        list.add(new Landmark("2", "Monument to Prince Mihailo", "Na Trgu Republike", R.drawable.knez,44.8162589 , 20.4581312 ));
+        list.add(new Landmark("3", "Terazije Fountain", "Fontana kod hotela Moskva", R.drawable.terazije,44.812817,20.458324));
+        list.add(new Landmark("4", "National Assembly Building ", "Ovde se skuljaju svi politicari", R.drawable.narodna_skupstina,44.8117406, 20.4637728));
+        list.add(new Landmark("5", "St. Sava's Cathedral", "Najlepsi pravoslavni hram na Balkanu", R.drawable.sv_sava,44.7980694,20.4669297));
         return list;
     }
 }

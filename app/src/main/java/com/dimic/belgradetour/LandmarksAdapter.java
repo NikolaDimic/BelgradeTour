@@ -66,7 +66,7 @@ public class LandmarksAdapter extends RecyclerView.Adapter<LandmarksAdapter.Land
                     addLandmarkToRoute(landmark);
                 }
             });
-            Picasso.get().load(landmark.getImageUrl()).into(landmarkImageView);
+            Picasso.get().load(landmark.getImage()).into(landmarkImageView);
             landmarkContainer.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
