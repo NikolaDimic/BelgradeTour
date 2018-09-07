@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.dimic.belgradetour.R;
 import com.dimic.belgradetour.RouteManager;
 import com.dimic.belgradetour.models.Landmark;
+//import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -28,10 +29,24 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.maps.DirectionsApi;
+import com.google.maps.GeoApiContext;
+import com.google.maps.android.PolyUtil;
+import com.google.maps.model.DirectionsResult;
+import com.google.maps.model.DirectionsRoute;
+import com.google.maps.errors.ApiException;
+import com.google.maps.model.TravelMode;
 
+
+import org.joda.time.DateTime;
+
+import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -47,6 +62,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private Location myLocation;
     private RouteManager routeManager;
     private List<Landmark> routeLandmarks;
+    private String origin,destination;
+
 
 
     public MapFragment() {
@@ -60,6 +77,31 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         fragment.setArguments(args);
         return fragment;
     }
+
+    private DirectionsResult getDirectionsDetails(String origin,String destination,TravelMode mode) {
+        DateTime now = new DateTime();
+        try {
+            return DirectionsApi.newRequest(getGeoContext())
+                    .mode(mode)
+                    .origin(origin)
+                    .destination(destination)
+                    .departureTime(now)
+                    .await();
+        } catch (ApiException e) {
+            e.printStackTrace();
+            return null;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+
+
 
 
     @Override
@@ -118,9 +160,21 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
             return;
         }
+
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
+
+        DirectionsResult result=getDirectionsDetails("Republic Square,Kolarčeva 1,Belgrade","Temple of Saint Sava,Krušedolska 2a,Belgrade",TravelMode.WALKING);
+        if(result!=null) {
+            addPolyline(result, googleMap);
+        }
+
+
+
+
+
     }
+
 
     public void getDeviceLocation() {
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
@@ -169,4 +223,28 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             }
         }
     }
+
+
+
+
+
+        private void addPolyline(DirectionsResult results, GoogleMap mMap) {
+            List<LatLng> decodedPath = PolyUtil.decode(results.routes[0].overviewPolyline.getEncodedPath());
+            mMap.addPolyline(new PolylineOptions().addAll(decodedPath));
+        }
+
+
+
+    private GeoApiContext getGeoContext() {
+        GeoApiContext geoApiContext = new GeoApiContext();
+        return geoApiContext
+                .setQueryRateLimit(3)
+                .setApiKey(getString(R.string.google_maps_API_key))
+                .setConnectTimeout(1, TimeUnit.SECONDS)
+                .setReadTimeout(1, TimeUnit.SECONDS)
+                .setWriteTimeout(1, TimeUnit.SECONDS);
+    }
+
+
+
 }
