@@ -161,11 +161,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
 
-        //   DirectionsResult result=getDirectionsDetails("Trg Republike,Belgrade","Hram svetog save, Belgrade",TravelMode.WALKING);
-        //  if(result!=null) {
-        //       addPolyline(result, googleMap);
-        //   }
-
     }
 
 
@@ -237,17 +232,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private void pokreni() {
 
         for (int i = 0; i < routeLandmarks.size() - 1; i++) {
-            if (i == 0) {
-                Landmark landmark3 = routeLandmarks.get(i);
-                String origin = "My Location";
-                String destonation = landmark3.getInfo();
-                DirectionsResult result = getDirectionsDetails(origin, destonation, TravelMode.WALKING);
-                if (result != null) {
-                    addPolyline(result, mMap);
-                }
-            }
-
-                {
                     Landmark landmark = routeLandmarks.get(i);
                     Landmark landmark1 = routeLandmarks.get(i + 1);
                     if (i + 1 == routeLandmarks.size()) {
@@ -260,10 +244,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                             addPolyline(result, mMap);
                         }
                     }
-
                 }
-
-        }
 
     }
 
