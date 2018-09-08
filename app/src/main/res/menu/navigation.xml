@@ -4,20 +4,25 @@
 
     <item
         android:id="@+id/map"
-        android:icon="@drawable/ic_planet"
+        android:icon="@drawable/button1"
         app:showAsAction="always"
         android:title="@string/map" />
 
     <item
         android:id="@+id/tour"
-        app:showAsAction="always"
-        android:icon="@android:drawable/ic_menu_my_calendar"
-        android:title="@string/my_route" />
+        android:checkable="false"
+        android:enabled="true"
+        android:icon="@drawable/button2"
+        android:title="@string/my_route"
+        android:visible="true"
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/sight_list"
-        app:showAsAction="always"
-        android:icon="@android:drawable/ic_input_add"
-        android:title="@string/sight_list" />
+        android:enabled="true"
+        android:icon="@drawable/button3"
+        android:title="@string/landmark_list"
+        android:visible="true"
+        app:showAsAction="always" />
 
 </menu>

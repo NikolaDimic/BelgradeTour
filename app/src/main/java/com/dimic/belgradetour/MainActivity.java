@@ -16,7 +16,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 public class MainActivity extends AppCompatActivity {
     private FusedLocationProviderClient mFusedLocationProviderClient;
 
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+    private BottomNavigationView.OnNavigationItemSelectedListener monNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
         @Override
@@ -29,11 +29,11 @@ public class MainActivity extends AppCompatActivity {
                     updateTitle("Map");
                     break;
                 case R.id.tour:
-                    updateTitle("My tour");
+                    updateTitle("My Route");
                     fragment = TourFragment.newInstance();
                     break;
                 case R.id.sight_list:
-                    updateTitle("All sights");
+                    updateTitle("All Landmarks");
                     fragment = SightListFragment.newInstance();
                     break;
             }
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private void switchToFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.container, fragment)
+                .replace(R.id.container, fragment)  
                 .commit();
     }
 
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         BottomNavigationView navigation = findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        navigation.setOnNavigationItemSelectedListener(monNavigationItemSelectedListener);
         switchToFragment(MapFragment.newInstance());
         updateTitle("Map");
     }

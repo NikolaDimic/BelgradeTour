@@ -26,19 +26,22 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.gson.JsonObject;
 import com.google.maps.DirectionsApi;
 import com.google.maps.GeoApiContext;
 import com.google.maps.android.PolyUtil;
 import com.google.maps.model.DirectionsResult;
-import com.google.maps.model.DirectionsRoute;
+//import com.google.maps.model.DirectionsRoute;
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.TravelMode;
+
 
 
 import org.joda.time.DateTime;
@@ -48,9 +51,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 
-/**
- * A simple {@link Fragment} subclass.
- */
+
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
 
@@ -62,7 +63,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private Location myLocation;
     private RouteManager routeManager;
     private List<Landmark> routeLandmarks;
-    private String origin,destination;
 
 
 
@@ -78,7 +78,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         return fragment;
     }
 
-    private DirectionsResult getDirectionsDetails(String origin,String destination,TravelMode mode) {
+    private DirectionsResult getDirectionsDetails(String origin, String destination, TravelMode mode) {
         DateTime now = new DateTime();
         try {
             return DirectionsApi.newRequest(getGeoContext())
@@ -100,11 +100,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
 
-
-
-
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -114,7 +109,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         navigateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openGoogleMaps();
+                //openGoogleMaps();
+                pokreni();
+
             }
         });
         mapView.onCreate(savedInstanceState);
@@ -149,6 +146,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             LatLng m1 = new LatLng(landmark.getLatitude(), landmark.getLongitude());
             MarkerOptions options = new MarkerOptions()
                     .position(m1)
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.location))
                     .snippet(landmark.getDescription())
                     .title(landmark.getName());
             mMap.addMarker(options);
@@ -160,18 +158,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
             return;
         }
-
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
 
-        DirectionsResult result=getDirectionsDetails("Republic Square,Kolarčeva 1,Belgrade","Temple of Saint Sava,Krušedolska 2a,Belgrade",TravelMode.WALKING);
-        if(result!=null) {
-            addPolyline(result, googleMap);
-        }
-
-
-
-
+        //   DirectionsResult result=getDirectionsDetails("Trg Republike,Belgrade","Hram svetog save, Belgrade",TravelMode.WALKING);
+        //  if(result!=null) {
+        //       addPolyline(result, googleMap);
+        //   }
 
     }
 
@@ -225,14 +218,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
 
-
-
-
-        private void addPolyline(DirectionsResult results, GoogleMap mMap) {
-            List<LatLng> decodedPath = PolyUtil.decode(results.routes[0].overviewPolyline.getEncodedPath());
-            mMap.addPolyline(new PolylineOptions().addAll(decodedPath));
-        }
-
+    private void addPolyline(DirectionsResult results, GoogleMap mMap) {
+        List<LatLng> decodedPath = PolyUtil.decode(results.routes[0].overviewPolyline.getEncodedPath());
+        mMap.addPolyline(new PolylineOptions().addAll(decodedPath));
+    }
 
 
     private GeoApiContext getGeoContext() {
@@ -245,6 +234,42 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 .setWriteTimeout(1, TimeUnit.SECONDS);
     }
 
+    private void pokreni() {
+
+        for (int i = 0; i < routeLandmarks.size() - 1; i++) {
+            if (i == 0) {
+                Landmark landmark3 = routeLandmarks.get(i);
+                String origin = "My Location";
+                String destonation = landmark3.getInfo();
+                DirectionsResult result = getDirectionsDetails(origin, destonation, TravelMode.WALKING);
+                if (result != null) {
+                    addPolyline(result, mMap);
+                }
+            }
+
+                {
+                    Landmark landmark = routeLandmarks.get(i);
+                    Landmark landmark1 = routeLandmarks.get(i + 1);
+                    if (i + 1 == routeLandmarks.size()) {
+                        break;
+                    } else {
+                        String origin = landmark.getInfo();
+                        String destonation = landmark1.getInfo();
+                        DirectionsResult result = getDirectionsDetails(origin, destonation, TravelMode.WALKING);
+                        if (result != null) {
+                            addPolyline(result, mMap);
+                        }
+                    }
+
+                }
+
+        }
+
+    }
+
 
 
 }
+
+
+
